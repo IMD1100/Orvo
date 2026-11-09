@@ -1,0 +1,3 @@
+engine/vendor/** linguist-vendored
+python/legacy/vendor/** linguist-vendored
+frontend/third-party/** linguist-vendored
