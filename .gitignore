@@ -1,0 +1,14 @@
+# Local dependencies and generated output
+.deps/
+frontend/node_modules/
+frontend/dist/
+python/.venv/
+**/__pycache__/
+*.py[cod]
+engine/build/
+src-tauri/target/
+src-tauri/gen/
+*.log
+.env
+.env.*
+!.env.example

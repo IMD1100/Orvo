@@ -1,0 +1,194 @@
+.mixer-channel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12px;
+  align-items: center;
+  gap: 2px 8px;
+  padding-block-start: 4px;
+}
+
+.mixer-buttons { display: flex; gap: 4px; }
+
+.mixer-buttons button {
+  position: relative;
+  width: 30px;
+  padding-inline: 0;
+  transition: color 120ms, background-color 120ms, box-shadow 120ms;
+}
+.mixer-buttons button:active:not(:disabled) { transform: none; }
+.mixer-buttons button[data-state=solo] {
+  --mixer-button-tone: var(--color-chart-8-active);
+  --mixer-button-chroma: .18;
+}
+.mixer-buttons button[data-state=on] {
+  --mixer-button-tone: var(--color-chart-7-active);
+  --mixer-button-chroma: .18;
+}
+.mixer-buttons button:is([data-state=muted], [data-state=bypass]) {
+  --mixer-button-tone: var(--color-text-error-primary);
+  --mixer-button-chroma: .16;
+}
+.mixer-buttons button[data-state]:not([data-state=empty]), :is(.transport, .blueprint-transport) :is(.transport-play, .transport-loop)[aria-pressed=true] {
+  --mixer-button-light: oklch(from var(--mixer-button-tone) .57 var(--mixer-button-chroma) h);
+  --mixer-button-mid: oklch(from var(--mixer-button-tone) .53 var(--mixer-button-chroma) h);
+  --mixer-button-dark: oklch(from var(--mixer-button-tone) .47 var(--mixer-button-chroma) h);
+  --mixer-button-pressed: oklch(from var(--mixer-button-tone) .43 var(--mixer-button-chroma) h);
+  --gradient-button-danger-default: linear-gradient(var(--mixer-button-mid), var(--mixer-button-dark));
+  --gradient-button-danger-hover: linear-gradient(var(--mixer-button-light), var(--mixer-button-mid));
+  --gradient-button-danger-active: linear-gradient(var(--mixer-button-dark), var(--mixer-button-pressed));
+  --gradient-button-danger-disabled: var(--gradient-button-primary-disabled);
+  --color-foreground-disabled-danger: var(--color-button-primary-disabled-foreground);
+}
+.mixer-buttons button[data-state=solo][aria-pressed=true] {
+  --mixer-button-light: oklch(from var(--mixer-button-tone) .83 .20 h);
+  --mixer-button-mid: oklch(from var(--mixer-button-tone) .78 .20 h);
+  --mixer-button-dark: oklch(from var(--mixer-button-tone) .72 .20 h);
+  --mixer-button-pressed: oklch(from var(--mixer-button-tone) .68 .20 h);
+  color: var(--color-text-white);
+}
+:is(.transport, .blueprint-transport) :is(.transport-play, .transport-loop)[aria-pressed=true] {
+  --mixer-button-tone: var(--color-chart-7-active);
+  --mixer-button-chroma: .18;
+}
+.mixer-buttons button[data-dirty=true]::after {
+  content: '';
+  position: absolute;
+  inset: 3px 3px auto auto;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-chart-8-active);
+  pointer-events: none;
+}
+
+.mixer-fader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+.mixer-rail, .slim-slider {
+  --mixer-rail-color: color-mix(in srgb, var(--orvo-control-surface) 84%, var(--color-text-primary));
+  --mixer-fill-color: color-mix(in srgb, var(--orvo-control-surface) 35%, var(--color-chart-1-active));
+  --mixer-knob-color: color-mix(in srgb, var(--orvo-control-surface) 15%, var(--color-chart-1-active));
+}
+.mixer-rail {
+  position: relative;
+  min-width: 0;
+  margin-inline: 6px;
+  --mixer-zero: 50%;
+}
+.mixer-rail[data-gain=true] { --mixer-zero: 70%; }
+/* The BoardUI track owns pointer geometry, so place marks over the same box. */
+.mixer-rail > div > div { height: 22px; }
+.mixer-rail > div > div > span:first-child { background: var(--mixer-rail-color); }
+.mixer-rail > div > div > span:nth-child(2) { background: var(--mixer-fill-color); }
+.mixer-rail > div > div > div { width: 14px; height: 14px; z-index: 2; }
+.mixer-rail > div > div > div > span { width: 6px; height: 6px; background: var(--mixer-knob-color); }
+.slim-slider > div > span:first-child { background: var(--mixer-rail-color); }
+.slim-slider > div > span:nth-child(2) { background: var(--mixer-fill-color); }
+.slim-slider > div > div > span { background: var(--mixer-knob-color); }
+.mixer-zero {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--mixer-zero);
+  z-index: 1;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-text-primary);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.mixer-limit {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 1px;
+}
+.mixer-limit {
+  inset-block-start: 0;
+  inset-inline-end: -5px;
+  width: 10px;
+  height: 2px;
+  background: var(--color-chart-8-active);
+  animation: mixer-limit-fade 460ms ease-out forwards;
+}
+@keyframes mixer-limit-fade { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
+
+.mixer-readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-text-secondary);
+}
+.mixer-readout .mixer-number-field { height: 22px; padding: 0 3px; }
+.mixer-readout .mixer-number-field:not(:focus-within) {
+  background-color: transparent;
+  box-shadow: none;
+}
+.mixer-readout .mixer-number {
+  width: 100%;
+  padding: 0;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+.mixer-readout[data-invalid=true] .mixer-number-field:focus-within { box-shadow: inset 0 0 0 1px var(--color-text-error-primary); }
+.mixer-readout[data-invalid=true] .mixer-number { color: var(--color-text-error-primary); }
+
+.mixer-meters { position: relative; display: flex; gap: 2px; width: 12px; }
+.mixer-channel > .mixer-buttons,
+.mixer-channel > .mixer-fader { grid-column: 1; }
+.mixer-channel > .mixer-meters { position: absolute; inset: 4px 8px 8px auto; }
+.mixer-meter {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-background-secondary-default);
+  box-shadow: inset 0 0 0 1px var(--color-separator-border);
+}
+.mixer-meter i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--color-chart-2) 0 83.33%, var(--color-text-error-primary) 83.33% 100%);
+  transition: clip-path 150ms linear;
+}
+.mixer-meter i[data-silent=true] { transition-duration: 500ms; }
+.mixer-peak-hold { position: absolute; z-index: 1; left: 0; right: 0; height: 2px; background: var(--color-text-white); pointer-events: none; }
+.mixer-meter[data-clip-held=true]::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--color-text-error-primary);
+}
+
+.mixer-clip-reset { position: absolute; z-index: 2; inset: 0; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.mixer-fader[data-vertical=true] {
+  grid-template: 'rail scale meter' 88px 'readout readout readout' auto / 26px 24px 12px;
+  justify-content: center;
+  gap: 8px;
+}
+.mixer-fader[data-vertical=true] .mixer-rail { grid-area: rail; align-self: stretch; margin: 0; }
+.mixer-fader[data-vertical=true] .mixer-rail > div,
+.mixer-fader[data-vertical=true] .mixer-rail > div > div { width: 100%; height: 100%; }
+.mixer-fader[data-vertical=true] .mixer-zero { inset: auto auto var(--mixer-zero) 50%; transform: translate(-50%, 50%); }
+.mixer-fader[data-vertical=true] .mixer-limit { inset: -4px auto auto calc(50% - 5px); }
+.mixer-fader[data-vertical=true] .mixer-meters { grid-area: meter; align-self: stretch; }
+.mixer-fader[data-vertical=true] .mixer-readout { grid-area: readout; width: 54px; justify-self: center; }
+.mixer-scale { grid-area: scale; position: relative; align-self: stretch; color: var(--color-text-secondary); }
+.mixer-scale > span { position: absolute; }
+.mixer-scale > span:first-child { top: 0; transform: translateY(-50%); }
+.mixer-scale > span:nth-child(2) { top: 30%; transform: translateY(-50%); }
+.mixer-scale > span:last-child { bottom: 0; transform: translateY(50%); }
+
+.master-spectrum { display: block; width: 100%; margin-top: auto; }
+.master-spectrum text { fill: var(--color-text-secondary); font-size: 9px; font-variant-numeric: tabular-nums; }
+.master-spectrum line { stroke: var(--color-separator-border); stroke-width: 1; }
+.master-spectrum polyline { stroke: var(--color-chart-1-active); stroke-width: 1.3; fill: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mixer-buttons button { transition: none; }
+  .mixer-meter i, .mixer-meter i[data-silent=true] { transition-duration: 0ms; }
+}

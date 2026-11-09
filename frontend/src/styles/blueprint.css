@@ -1,0 +1,195 @@
+.blueprint-editor {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.blueprint-canvas {
+  --blueprint-field: var(--orvo-blueprint-surface);
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  outline: none;
+  background-color: var(--blueprint-field);
+}
+.blueprint-canvas .react-flow {
+  --xy-background-color: var(--blueprint-field);
+  --xy-background-pattern-color: color-mix(in srgb, var(--blueprint-field) 80%, var(--color-text-primary));
+  --xy-edge-stroke: var(--color-foreground-icon-tertiary);
+  --xy-edge-stroke-selected: var(--orvo-selection-edge);
+  --xy-connectionline-stroke: var(--color-accent-500);
+  --xy-edge-label-background-color: var(--color-background-primary-default);
+  --xy-edge-label-color: var(--color-text-primary);
+}
+.blueprint-canvas .react-flow__edge-path { stroke-width: 2.5px; stroke-linecap: round; }
+.blueprint-canvas .react-flow__nodesselection-rect { background: transparent; border: 0; }
+.blueprint-canvas .react-flow__connectionline { z-index: 0; }
+.blueprint-canvas .react-flow__nodes { z-index: 1; }
+.blueprint-canvas .react-flow__edge:not(.selected):not(.blueprint-bypassed-edge):hover .react-flow__edge-path { stroke: var(--color-accent-500); }
+.blueprint-canvas .react-flow__edge.blueprint-bypassed-edge .react-flow__edge-path {
+  stroke: var(--color-text-tertiary);
+  stroke-width: 1.5px;
+  opacity: .5;
+}
+.blueprint-canvas .react-flow__edge.blueprint-bypassed-edge.selected .react-flow__edge-path { opacity: 1; }
+.blueprint-controls {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  gap: 4px;
+}
+.blueprint-zoom { width: 56px; }
+.blueprint-controls > button:focus-visible { box-shadow: none; }
+.blueprint-zoom {
+  border-color: var(--orvo-region-border);
+  background: color-mix(in srgb, var(--color-background-primary-default) 94%, var(--color-text-primary));
+  font-variant-numeric: tabular-nums;
+}
+.blueprint-zoom:hover:not(:disabled) { background: var(--orvo-hover-surface); }
+.blueprint-controls .blueprint-apply {
+  --apply-tone: var(--color-chart-7-active);
+  --apply-light: .57;
+  --apply-mid: .53;
+  --apply-dark: .47;
+  --apply-chroma: .18;
+  color: var(--color-text-white);
+  border-color: transparent;
+  background-image: linear-gradient(oklch(from var(--apply-tone) var(--apply-mid) var(--apply-chroma) h), oklch(from var(--apply-tone) var(--apply-dark) var(--apply-chroma) h));
+}
+.blueprint-controls .blueprint-apply[data-pending="true"] {
+  --apply-tone: var(--color-chart-8-active);
+  --apply-light: .83;
+  --apply-mid: .78;
+  --apply-dark: .72;
+  --apply-chroma: .20;
+}
+.blueprint-controls .blueprint-apply:not(:disabled):hover {
+  background-image: linear-gradient(oklch(from var(--apply-tone) var(--apply-light) var(--apply-chroma) h), oklch(from var(--apply-tone) var(--apply-mid) var(--apply-chroma) h));
+}
+.blueprint-issue {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 5;
+  max-width: calc(100% - 218px);
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-button-default);
+  border-radius: 8px;
+  color: var(--color-text-error-primary);
+  background: var(--color-background-primary-default);
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+.blueprint-node-menu [role="menu"] { max-height: min(360px, 60vh); }
+.blueprint-node-menu [role="menuitem"] > span { white-space: normal; overflow: visible; }
+.blueprint-node {
+  --node-ink: var(--color-chart-5-active);
+  --node-surface: color-mix(in srgb, var(--color-background-primary-default) 82%, var(--node-ink));
+  --node-header-tint: 24%;
+  position: relative;
+  border: 1px solid color-mix(in oklab, var(--node-ink) 46%, var(--color-border-button-default));
+  border-radius: 12px;
+  color: var(--color-text-primary);
+  background: var(--node-surface);
+}
+.blueprint-node[data-kind="input"] { --node-ink: var(--color-chart-4-active); }
+.blueprint-node[data-kind="output"] { --node-ink: var(--color-chart-1-active); }
+.blueprint-node[data-kind="mixer"] { --node-ink: var(--color-chart-2-active); }
+.blueprint-node[data-bypassed="true"] {
+  --node-ink: var(--color-text-tertiary);
+  --node-surface: var(--color-background-secondary-default);
+  --node-header-tint: 13%;
+  opacity: .7;
+}
+.blueprint-node[data-selected="true"] {
+  outline: 2px solid var(--color-border-focus-ring);
+  outline-offset: -2px;
+}
+.blueprint-node[data-issue="true"] { border-color: var(--color-text-error-primary); }
+.blueprint-node-head {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 11px;
+  background: color-mix(in oklab, var(--node-ink) var(--node-header-tint), var(--node-surface));
+}
+.blueprint-node:has(.blueprint-node-body, .blueprint-node-channel) .blueprint-node-head { border-radius: 11px 11px 0 0; }
+.blueprint-node-channel { padding: 4px 12px; color: var(--color-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blueprint-node :is(.blueprint-node-channel, .parameter-line > label, .parameter-unit, .blueprint-plugin-path) { color: color-mix(in srgb, var(--color-text-primary) 85%, var(--color-background-primary-default)); }
+.blueprint-node .eq-response svg text { fill: color-mix(in srgb, var(--color-text-primary) 85%, var(--color-background-primary-default)); }
+.blueprint-node-head > svg { color: var(--node-ink); flex: 0 0 auto; }
+.blueprint-node-head strong { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blueprint-node[data-bypassed="true"] .blueprint-node-head strong { color: var(--color-text-secondary); }
+.blueprint-enable { padding: 4px; margin: -4px; }
+.blueprint-enable[data-selected] > span[aria-hidden="true"] {
+  background-image: linear-gradient(oklch(from var(--node-ink) .65 c h), oklch(from var(--node-ink) .55 c h));
+}
+.blueprint-node-body {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid var(--color-separator-border);
+  border-radius: 0 0 11px 11px;
+}
+.blueprint-node-fields {
+  --parameter-columns: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--parameter-columns), minmax(0, 1fr));
+  min-width: 0;
+  gap: 4px 12px;
+}
+.blueprint-node-columns { --parameter-columns: 2; }
+.blueprint-node .parameter { min-width: 0; padding: 4px 0; border-bottom: 1px solid var(--color-separator-border); }
+.parameter-rail { position: relative; }
+.blueprint-node .parameter:last-child, .blueprint-node-columns > .parameter:nth-last-child(2):nth-child(odd) { border-bottom-color: transparent; }
+.blueprint-node .parameter-line > label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blueprint-node .numeric { display: grid; grid-template-columns: 64px 24px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.blueprint-node .numeric input { width: 64px; }
+.blueprint-node .numeric input:focus { outline-offset: -2px; }
+.blueprint-node .parameter-unit { font-size: 11px; white-space: nowrap; }
+.blueprint-node .eq-response { padding: 0 4px; }
+.blueprint-node .eq-spectrum { stroke: var(--color-chart-4-active); stroke-width: 1; opacity: .8; fill: none; }
+.blueprint-transport { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.blueprint-play-ring { position: relative; display: grid; place-items: center; width: 32px; height: 32px; }
+.blueprint-play-ring > svg { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); fill: none; stroke-width: 2; pointer-events: none; }
+.blueprint-progress-track { stroke: var(--color-separator-border); }
+.blueprint-progress-value { stroke: var(--color-chart-7-active); stroke-dasharray: 100; stroke-dashoffset: 100; stroke-linecap: round; }
+.blueprint-plugin-path { margin: 0; overflow-wrap: anywhere; }
+.blueprint-node .react-flow__handle {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--color-foreground-icon-tertiary);
+  background: var(--node-ink);
+  opacity: 0;
+}
+.blueprint-node .react-flow__handle-left { left: -1px; transform: translate(-50%, -50%); }
+.blueprint-node .react-flow__handle-right { right: -1px; transform: translate(50%, -50%); }
+.react-flow__node:hover .blueprint-node .react-flow__handle,
+.react-flow__node:focus-visible .blueprint-node .react-flow__handle,
+.blueprint-node[data-selected="true"] .react-flow__handle,
+.blueprint-canvas:has(.react-flow__handle.connectingfrom, .react-flow__handle.clickconnecting) .blueprint-node .react-flow__handle { opacity: 1; }
+.blueprint-node .react-flow__handle:hover,
+.blueprint-node .react-flow__handle.valid { border-color: var(--node-ink); background: var(--color-background-primary-default); }
+.blueprint-add-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.blueprint-add-list > button { justify-content: start; }
+.blueprint-plugin-form { display: grid; gap: 16px; }
+.blueprint-plugin-form button { justify-self: end; }
+
+/* Action Node and Create Menu: keep FX controls directly editable. */
+.blueprint-node { box-shadow: 0 2px 8px color-mix(in srgb, var(--color-text-primary) 10%, transparent); }
+.blueprint-node-head { gap: 10px; }
+.blueprint-node-head > svg { padding: 3px; width: 24px; height: 24px; border-radius: 7px; background: color-mix(in srgb, var(--node-ink) 14%, transparent); }
+.blueprint-create-menu { transform-origin: top left; }
+.blueprint-create-menu [role="menu"] { max-height: min(360px, 60vh); overflow-y: auto; }
+
+.blueprint-controls .blueprint-zoom, .blueprint-controls .blueprint-apply { border-radius: 999px; min-height: 28px; box-shadow: none; }
+.blueprint-controls .blueprint-zoom { width: 56px; }
+
+.blueprint-node[data-eq] .blueprint-node-body { grid-template-columns: minmax(0, 1fr); }
+.blueprint-node[data-eq] .blueprint-node-fields { --parameter-columns: 3; }
+.blueprint-canvas .react-flow__node, .blueprint-node, .blueprint-node-head { cursor: default; }

@@ -1,0 +1,113 @@
+.liq-well {
+  width: 240px; height: 130px;
+  display: grid; place-items: center;}
+
+/* ── BLACK AND WHITE, AND NO EDGE OF ITS OWN ────────────────
+   The on state was a green wash with a green ring, which made
+   this the only block on the bench asserting a colour nothing
+   else uses — and a switch does not need a hue to say it is
+   on. It inverts instead: a light track with a dark thumb
+   becomes a dark track with a light one, which is the strongest
+   thing two colours can say and the only thing this component
+   has to say.
+
+   `--fill-on` / `--fill-slab` rather than --ink / --board, so
+   the pair follows the Fill control the entry declares instead
+   of naming a colour twice.
+
+   And no inset ring. It carried one unconditionally, which is
+   an edge the Stroke switch cannot take away — the same bug
+   the sleep pill, the command bar and the Notify pill all had.
+   Stroke's own rule is a few hundred lines up. */
+.liq-sw {
+  position: relative;
+  width: 92px; height: 46px;
+  padding: 0; border: 0;
+  /* ── ALWAYS A PILL ────────────────────────────────────────
+     It took a Corner knob for a while and does not any more.
+     A switch is a pill: that is the shape the gesture is named
+     after, and squaring it turns a thing you slide into a
+     thing you click. The droplet inside followed the knob too,
+     concentrically, and the same argument applies twice over —
+     one number that could only ever make the component less
+     like itself. */
+  border-radius: 999px;
+  /* ── OFF IS THE SLAB, NOT A GREY ─────────────────────────
+     The two states are the two ends of the fill's own ramp,
+     and OFF is the light end of it: the track is the slab —
+     white on a light fill, near-black on a dark one — and the
+     dot is a grey mixed toward it. ON is the inversion, ink
+     track and slab dot, which is what it always was.
+
+     Read across the pair, the TRACK carries the state and the
+     dot is along for the ride. It was the other way round:
+     the off track was a 12% wash and the dot was full ink, so
+     the loud half of the switch was the part that only moves.
+
+     It reads because the card behind is not white — the stage
+     is the board's own grey, so a white pill on it is an
+     object. Stroke's hairline is there for anywhere it is
+     not. */
+  background: var(--fill-slab, var(--card));
+  cursor: pointer;
+  /* it is a rail you can push along, not only a button */
+  touch-action: none;
+  transition: background 420ms ease;}
+
+.liq-sw[data-on="true"] { background: var(--fill-on, var(--ink)); }
+
+.liq-sw-blobs {
+  position: absolute; inset: 0;}
+
+/* opaque on purpose: a goo filter over a translucent fill
+   thresholds the alpha away and the shape disappears */
+/* left: 0 is not optional. These are inline elements, so with
+   left: auto the static position is wherever the line box put
+   them — and the button they sit in centres its text, which
+   pushed both blobs to the middle of the track and the thumb
+   clean off the end of it. */
+/* ── the droplet, and it is the ONLY body ───────────────────
+   There was a second, smaller blob running behind it on a
+   lagging spring; the goo between them necked into a thread,
+   which is what a trail is and what it looks like. It is one
+   body that stretches now — see the note in Liquid.tsx, and
+   the dragging ball's, which lost the same thing first.
+
+   `left: 0` is not optional. It is an inline element, so with
+   `left: auto` the static position is wherever the line box
+   put it — and the button it sits in centres its text, which
+   pushed the thumb to the middle of the track.
+
+   OPAQUE on purpose: a goo filter over a translucent fill
+   thresholds the alpha away and the shape disappears. Which
+   is why the grey is a `color-mix` and not an alpha — see the
+   note where the off colour is chosen. */
+.liq-thumb {
+  position: absolute;
+  left: 0; top: 50%;
+  /* the size comes from Liquid.tsx, which also needs it for the
+     travel — one number, so the circle and the distance it
+     crosses cannot disagree */
+  width: var(--liq-thumb, 36px); height: var(--liq-thumb, 36px);
+  margin-top: calc(var(--liq-thumb, 36px) / -2);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--fill-on, var(--ink)) 19%, var(--fill-slab, var(--card)));
+  /* transform is Framer's — a CSS transition on the same
+     property re-interpolates every frame the spring writes,
+     and what you see is the easing, not the spring. The colour
+     is the only thing here that eases, and it is the only one
+     that can: everything else about this element is written
+     into one transform by Framer. */
+  transition: background 420ms ease;}
+
+/* ON inverts the pair: ink track, slab droplet. The two states
+   are the two ends of the fill's ramp and never two values of
+   the same one. */
+.liq-sw[data-on="true"] .liq-thumb { background: var(--fill-slab, var(--board)); }
+
+
+.liq-well { display: block; position: relative; flex: none; width: 46px; height: 23px; --fill-on: var(--color-text-primary); --fill-slab: var(--color-background-secondary-default); }
+.liq-sw { position: absolute; top: 0; left: 0; transform: scale(.5); transform-origin: top left; }
+.liq-sw:disabled { opacity: .45; cursor: default; }
+.effect-toggle { display: grid; grid-template-columns: minmax(0, 90px) 46px; align-items: center; gap: 10px; min-width: 0; min-height: 32px; padding: 4px 0; }
+.effect-toggle > span { min-width: 0; overflow-wrap: anywhere; }
